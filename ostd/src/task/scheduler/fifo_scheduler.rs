@@ -54,8 +54,10 @@ impl<T: CommonSchedInfo + Send + Sync> Scheduler<T> for FifoScheduler<T> {
         };
 
         let mut rq = self.rq[target_cpu.as_usize()].disable_irq().lock();
-        if still_in_rq && let Err(_) = runnable.cpu().set_if_is_none(target_cpu) {
-            return None;
+        if still_in_rq {
+            if let Err(_) = runnable.cpu().set_if_is_none(target_cpu) {
+                return None;
+            }
         }
         rq.queue.push_back(runnable);
 

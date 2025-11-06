@@ -303,11 +303,11 @@ impl EarlyFrameAllocator {
             (&mut self.max_end, self.max_range.end),
         ] {
             let allocated = tail.align_up(align);
-            if let Some(allocated_end) = allocated.checked_add(size)
-                && allocated_end <= end
-            {
-                *tail = allocated_end;
-                return Some(allocated);
+            if let Some(allocated_end) = allocated.checked_add(size) {
+                if allocated_end <= end {
+                    *tail = allocated_end;
+                    return Some(allocated);
+                }
             }
         }
 
